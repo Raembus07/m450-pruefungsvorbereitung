@@ -1,4 +1,4 @@
-package main.java;
+package ch;
 
 /**
  * Strategie für die Implementierung der Währungsumrechnung:

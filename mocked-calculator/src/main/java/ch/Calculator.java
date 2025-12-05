@@ -1,10 +1,13 @@
-package main.java;
+package ch;
 
 public class Calculator implements ICalculator {
 
   public static final double MAX_VALUE = Math.pow(10, 12);
 
-  public Calculator() {
+  @Nonnull final IExchangeRateProvider exchangeRateProvider;
+
+  public Calculator(@Nonnull final IExchangeRateProvider exchangeRateProvider) {
+    this.exchangeRateProvider = exchangeRateProvider;
   }
 
   @Override
