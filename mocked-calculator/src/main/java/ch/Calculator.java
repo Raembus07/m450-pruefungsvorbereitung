@@ -1,10 +1,13 @@
 package ch;
 
+import jakarta.annotation.Nonnull;
+
 public class Calculator implements ICalculator {
 
   public static final double MAX_VALUE = Math.pow(10, 12);
 
-  @Nonnull final IExchangeRateProvider exchangeRateProvider;
+  @Nonnull
+  final IExchangeRateProvider exchangeRateProvider;
 
   public Calculator(@Nonnull final IExchangeRateProvider exchangeRateProvider) {
     this.exchangeRateProvider = exchangeRateProvider;
@@ -27,7 +30,7 @@ public class Calculator implements ICalculator {
 
   @Override
   public double divide(double left, double right) {
-    throw new UnsupportedOperationException("Not implemented yet"); 
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
