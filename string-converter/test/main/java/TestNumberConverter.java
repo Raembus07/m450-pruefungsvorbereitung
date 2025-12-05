@@ -8,7 +8,7 @@ public class TestNumberConverter {
 
   @BeforeEach
   void setUp(){
-    
+
   }
 
 }
