@@ -1,4 +1,4 @@
-package main.java;
+package ch;
 
 public class StringConverter implements IStringConverter {
 
