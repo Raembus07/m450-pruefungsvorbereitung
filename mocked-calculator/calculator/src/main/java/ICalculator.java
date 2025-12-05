@@ -1,3 +1,5 @@
+package main.java;
+
 public interface ICalculator {
 
   double add(double left, double right);
