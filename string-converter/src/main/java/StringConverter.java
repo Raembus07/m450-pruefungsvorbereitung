@@ -1,3 +1,5 @@
+package main.java;
+
 public class StringConverter implements IStringConverter {
 
   private static final String[] SINGLE_DIGIT_FRAGMENTS =

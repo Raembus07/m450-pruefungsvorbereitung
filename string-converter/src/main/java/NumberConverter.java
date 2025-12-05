@@ -1,3 +1,5 @@
+package main.java;
+
 public class NumberConverter {
 
   private final IStringConverter stringConverter;
