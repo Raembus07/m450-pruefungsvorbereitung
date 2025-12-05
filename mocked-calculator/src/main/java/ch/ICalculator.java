@@ -1,4 +1,4 @@
-package main.java;
+package ch;
 
 public interface ICalculator {
 
@@ -8,7 +8,7 @@ public interface ICalculator {
 
   double multiply(double left, double right);
 
-  double divide(double left, double right);
+  double divide(double left, double right) ;
 
   double convertUsdToChf(double usd);
 

@@ -1,8 +1,13 @@
-package main.java;
+package ch;
 
 public class Calculator implements ICalculator {
 
-  public Calculator() {
+  public static final double MAX_VALUE = Math.pow(10, 12);
+
+  @Nonnull final IExchangeRateProvider exchangeRateProvider;
+
+  public Calculator(@Nonnull final IExchangeRateProvider exchangeRateProvider) {
+    this.exchangeRateProvider = exchangeRateProvider;
   }
 
   @Override
@@ -22,7 +27,13 @@ public class Calculator implements ICalculator {
 
   @Override
   public double divide(double left, double right) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    final var division = left / right;
+
+    if (division > MAX_VALUE) {
+      throw new ArithmeticException("Result exceeds maximum value of 10 ^ 12");
+    }
+
+    return division;
   }
 
   @Override
