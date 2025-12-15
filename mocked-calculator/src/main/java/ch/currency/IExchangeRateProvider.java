@@ -1,4 +1,6 @@
-package ch;
+package ch.currency;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Strategie für die Implementierung der Währungsumrechnung:
@@ -19,5 +21,7 @@ package ch;
  *   des Wertebereichs liegen, soll eine geeignete Exception geworfen werden.
  */
 public interface IExchangeRateProvider {
-  double getRate(Currency dst, Currency per);
+  double getRate(@Nonnull final Currency dst,
+                 @Nonnull final Currency per,
+                 final double amount);
 }

@@ -1,4 +1,4 @@
-package ch;
+package ch.currency;
 
 public enum Currency {
   UNKNOWN,

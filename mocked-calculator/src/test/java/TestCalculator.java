@@ -1,12 +1,12 @@
-import ch.Calculator;
-import ch.ICalculator;
-import ch.IExchangeRateProvider;
+import ch.calc.Calculator;
+import ch.calc.ICalculator;
+import ch.calc.expression.IExpressionEvaluator;
+import ch.currency.IExchangeRateProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 public class TestCalculator {
 
@@ -14,10 +14,12 @@ public class TestCalculator {
 
   @Mock
   private IExchangeRateProvider exchangeRateProvider;
+  @Mock
+  IExpressionEvaluator evaluator;
 
   @BeforeEach
   void setUp(){
-    testee = new Calculator(exchangeRateProvider);
+    testee = new Calculator(exchangeRateProvider, evaluator);
   }
 
   @Test
