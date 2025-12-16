@@ -1,4 +1,4 @@
-package ch;
+package ch.calc;
 
 public interface ICalculator {
 
@@ -13,4 +13,8 @@ public interface ICalculator {
   double convertUsdToChf(double usd);
 
   double convertChfToUsd(double chf);
+
+  double eval(String expression);
+
+  double collectDataFrom(IDataService dataService);
 }
