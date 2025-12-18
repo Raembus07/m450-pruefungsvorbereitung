@@ -70,7 +70,7 @@ public class Calculator implements ICalculator {
     var sum = 0D;
     final var holder = new IntHolder();
 
-    if (!dataService.open("data")) {
+    if (!dataService.opwen("data")) {
       return 0;
     }
 

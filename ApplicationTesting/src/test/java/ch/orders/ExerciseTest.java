@@ -98,6 +98,15 @@ public class ExerciseTest extends BaseMockitoUnitTest {
       Assertions.assertEquals(0, expectedSubtotal.compareTo(result));
     }
 
+    /*
+     * Exercise 4 – Defensive Programming / Fail-Fast
+     *
+     * Aufgabenstellung:
+     * - Stelle sicher, dass der OrderTotalCalculator bei ungültigen Eingaben sofort eine Exception wirft (fail-fast).
+     * - In diesen Fällen dürfen KEINE externen Services aufgerufen werden (IDiscountService, IShippingService, ITaxService).
+     * - Pro Äquivalenzklasse bzw. Grenzwert reicht ein repräsentativer Testfall.
+     */
+
     @Test
     @DisplayName("order line without lines -> throws IllegalArgumentException")
     void test4() {
@@ -127,6 +136,56 @@ public class ExerciseTest extends BaseMockitoUnitTest {
       Mockito.verify(taxService, Mockito.times(0)).getTaxRate(Mockito.anyString());
       Mockito.verify(discountService, Mockito.times(0)).calculateDiscountAmount(Mockito.any(Order.class), Mockito.any(BigDecimal.class));
       Mockito.verify(shippingService, Mockito.times(0)).getShippingCost(Mockito.any(Order.class), Mockito.any(BigDecimal.class));
+    }
+
+    @Test
+    @DisplayName("order is null -> throws IllegalArgumentException and does NOT call services")
+    void test7_orderIsNull_throws_andDoesNotCallServices() {
+      Assertions.assertThrows(IllegalArgumentException.class, () -> testee.calculateTotal(null));
+
+      Mockito.verifyNoInteractions(taxService, discountService, shippingService);
+    }
+
+    @Test
+    @DisplayName("order lines is null -> throws IllegalArgumentException and does NOT call services")
+    void test8_linesIsNull_throws_andDoesNotCallServices() {
+      final Order order = new Order(null, "CH", null);
+
+      Assertions.assertThrows(IllegalArgumentException.class, () -> testee.calculateTotal(order));
+
+      Mockito.verifyNoInteractions(taxService, discountService, shippingService);
+    }
+
+    @Test
+    @DisplayName("country code is empty -> throws IllegalArgumentException and does NOT call services")
+    void test9_countryCodeEmpty_throws_andDoesNotCallServices() {
+      final var order = createOrder(1, new BigDecimal("10.00"));
+      final var invalid = new Order(order.lines(), "", null);
+
+      Assertions.assertThrows(IllegalArgumentException.class, () -> testee.calculateTotal(invalid));
+
+      Mockito.verifyNoInteractions(taxService, discountService, shippingService);
+    }
+
+    @Test
+    @DisplayName("country code is blank -> throws IllegalArgumentException and does NOT call services")
+    void test10_countryCodeBlank_throws_andDoesNotCallServices() {
+      final var order = createOrder(1, new BigDecimal("10.00"));
+      final var invalid = new Order(order.lines(), "   ", null);
+
+      Assertions.assertThrows(IllegalArgumentException.class, () -> testee.calculateTotal(invalid));
+
+      Mockito.verifyNoInteractions(taxService, discountService, shippingService);
+    }
+
+    @Test
+    @DisplayName("quantity is zero -> throws IllegalArgumentException and does NOT call services")
+    void test11_quantityZero_throws_andDoesNotCallServices() {
+      final var order = createOrder(0, new BigDecimal("10.00"));
+
+      Assertions.assertThrows(IllegalArgumentException.class, () -> testee.calculateTotal(order));
+
+      Mockito.verifyNoInteractions(taxService, discountService, shippingService);
     }
 
   }
