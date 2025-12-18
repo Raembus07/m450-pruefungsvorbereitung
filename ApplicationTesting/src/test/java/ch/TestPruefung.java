@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
  * - InOrder (Reihenfolge)
  * - Exception-Test
  */
-class Prüfungsvorbereitung extends BaseMockitoUnitTest {
+class TestPruefung extends BaseMockitoUnitTest {
 
   @Mock
   private ITaxService taxService;
