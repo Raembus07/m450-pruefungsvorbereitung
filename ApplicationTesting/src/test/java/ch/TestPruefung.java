@@ -24,6 +24,9 @@ import static org.mockito.Mockito.*;
  * - verify / verifyNoInteractions
  * - InOrder (Reihenfolge)
  * - Exception-Test
+ *
+ * Zusätzlich (unten):
+ * - Beispiele für Testdoubles: Dummy, Stub, Spy, Mock, Fake
  */
 class TestPruefung extends BaseMockitoUnitTest {
 
@@ -120,5 +123,127 @@ class TestPruefung extends BaseMockitoUnitTest {
         .getShippingCost(any(), any());
     inOrder.verify(taxService)
         .getTaxRate("CH");
+  }
+
+  /** Dummy: Platzhalter, wird nur übergeben (ohne Bedeutung für den Test). */
+  static class DummyTaxService implements ITaxService {
+    @Override
+    public BigDecimal getTaxRate(String countryCode) {
+      return BigDecimal.ZERO;
+    }
+  }
+
+  /** Stub: liefert vordefinierte Rückgabewerte. */
+  static class StubDiscountService implements IDiscountService {
+    @Override
+    public BigDecimal calculateDiscountAmount(Order order, BigDecimal subTotal) {
+      return new BigDecimal("5.00");
+    }
+  }
+
+  /** Spy: merkt sich, ob er aufgerufen wurde. */
+  static class SpyShippingService implements IShippingService {
+    boolean wasCalled = false;
+
+    @Override
+    public BigDecimal getShippingCost(Order order, BigDecimal subTotalAfterDiscount) {
+      wasCalled = true;
+      return BigDecimal.ZERO;
+    }
+  }
+
+  /** Fake: vereinfachte echte Implementierung (nicht produktionsreif). */
+  static class FakeTaxService implements ITaxService {
+    @Override
+    public BigDecimal getTaxRate(String countryCode) {
+      return "CH".equals(countryCode)
+          ? new BigDecimal("0.077")
+          : BigDecimal.ZERO;
+    }
+  }
+
+  @Test
+  void dummy_example() {
+    ITaxService dummy = new DummyTaxService();
+
+    OrderTotalCalculator calc = new OrderTotalCalculator(
+        dummy,
+        discountService,
+        shippingService
+    );
+
+    assertThrows(IllegalArgumentException.class, () -> calc.calculateTotal(null));
+  }
+
+  @Test
+  void stub_example() {
+    OrderTotalCalculator calc = new OrderTotalCalculator(
+        taxService,
+        new StubDiscountService(),
+        shippingService
+    );
+
+    when(shippingService.getShippingCost(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(taxService.getTaxRate(anyString()))
+        .thenReturn(BigDecimal.ZERO);
+
+    BigDecimal total = calc.calculateTotal(simpleOrder(new BigDecimal("10.00"), 1));
+    assertEquals(new BigDecimal("5.00"), total);
+  }
+
+  @Test
+  void spy_example() {
+    SpyShippingService spy = new SpyShippingService();
+
+    OrderTotalCalculator calc = new OrderTotalCalculator(
+        taxService,
+        discountService,
+        spy
+    );
+
+    when(discountService.calculateDiscountAmount(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(taxService.getTaxRate(anyString()))
+        .thenReturn(BigDecimal.ZERO);
+
+    calc.calculateTotal(simpleOrder(new BigDecimal("10.00"), 1));
+
+    assertEquals(true, spy.wasCalled);
+  }
+
+  @Test
+  void mock_example() {
+    Order order = simpleOrder(new BigDecimal("10.00"), 1);
+
+    when(discountService.calculateDiscountAmount(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(shippingService.getShippingCost(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(taxService.getTaxRate(anyString()))
+        .thenReturn(BigDecimal.ZERO);
+
+    testee.calculateTotal(order);
+
+    verify(discountService).calculateDiscountAmount(any(), any());
+    verify(shippingService).getShippingCost(any(), any());
+    verify(taxService).getTaxRate("CH");
+  }
+
+  @Test
+  void fake_example() {
+    OrderTotalCalculator calc = new OrderTotalCalculator(
+        new FakeTaxService(),
+        discountService,
+        shippingService
+    );
+
+    when(discountService.calculateDiscountAmount(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(shippingService.getShippingCost(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+
+    BigDecimal total = calc.calculateTotal(simpleOrder(new BigDecimal("10.00"), 1));
+    assertEquals(new BigDecimal("10.75"), total);
   }
 }
