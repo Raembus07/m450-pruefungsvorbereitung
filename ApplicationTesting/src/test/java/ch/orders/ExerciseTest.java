@@ -2,14 +2,21 @@ package ch.orders;
 
 import ch.util.BaseMockitoUnitTest;
 import jakarta.annotation.Nonnull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.stream.Stream;
 
 public class ExerciseTest extends BaseMockitoUnitTest {
 
@@ -43,6 +50,12 @@ public class ExerciseTest extends BaseMockitoUnitTest {
   @Nested
   class ExerciseTests {
 
+    @Nonnull
+    public static Stream<Integer> generateIntegers() {
+      final var random = new Random();
+      return Stream.generate(() -> random.nextInt(-100, 100)).limit(10);
+    }
+
     @Test
     @DisplayName("order with 1 line (no discount, no shipping fees, no tax) => total = line total")
     void test1() {
@@ -73,9 +86,7 @@ public class ExerciseTest extends BaseMockitoUnitTest {
       inOrder.verifyNoMoreInteractions();
     }
 
-    @ParameterizedTest(
-            name = "qty={0}, unitPrice={1} => subtotal={2}"
-    )
+    @ParameterizedTest
     @CsvSource({
             "1, 10.00, 10.00",
             "2, 10.00, 20.00",
@@ -96,6 +107,13 @@ public class ExerciseTest extends BaseMockitoUnitTest {
       final var result = testee.calculateTotal(order);
 
       Assertions.assertEquals(0, expectedSubtotal.compareTo(result));
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateIntegers")
+    @DisplayName("2 order with 1 line each - parametrized test with methode source")
+    void test12() {
+
     }
 
     /*
