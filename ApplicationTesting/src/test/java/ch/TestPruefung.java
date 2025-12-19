@@ -13,7 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Prüfungsvorbereitung – OrderTotalCalculator
@@ -210,6 +215,37 @@ class TestPruefung extends BaseMockitoUnitTest {
     calc.calculateTotal(simpleOrder(new BigDecimal("10.00"), 1));
 
     assertEquals(true, spy.wasCalled);
+  }
+
+  @Test
+  void spy_with_mockito_example() {
+    IShippingService real = new SpyShippingService();
+    IShippingService spyShipping = spy(real);
+
+    OrderTotalCalculator calc = new OrderTotalCalculator(
+        taxService,
+        discountService,
+        spyShipping
+    );
+
+    when(discountService.calculateDiscountAmount(any(), any()))
+        .thenReturn(BigDecimal.ZERO);
+    when(taxService.getTaxRate(anyString()))
+        .thenReturn(BigDecimal.ZERO);
+
+    // optional: nur diese eine Methode "faken"/überschreiben
+    doReturn(new BigDecimal("0.00"))
+        .when(spyShipping)
+        .getShippingCost(any(), any());
+
+    // Act
+    calc.calculateTotal(simpleOrder(new BigDecimal("10.00"), 1));
+
+    // Assert: Aufruf verifizieren (das ist der eigentliche Spy-Usecase)
+    verify(spyShipping).getShippingCost(any(), any());
+
+    // (optional) falls du weiterhin dein Flag prüfen willst:
+    // assertEquals(true, ((SpyShippingService) real).wasCalled);
   }
 
   @Test
